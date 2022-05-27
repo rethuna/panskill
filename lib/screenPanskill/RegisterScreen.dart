@@ -105,7 +105,7 @@ class _RegisterDemoState extends State<RegisterDemo> {
   _onAlertWithCustomContentPressed(context) {
     Alert(
         context: context,
-        title: "LOGIN",
+        title: "LOGIN Here",
         content: Column(
           children: <Widget>[
             TextField(

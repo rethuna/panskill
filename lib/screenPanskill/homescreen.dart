@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'loginscreen.dart';
@@ -15,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Welcome",
           style: TextStyle(color: Colors.white),
         ),
@@ -30,11 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                FirebaseAuth.instance.signOut();
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (c) => LoginDemo()));
               },
-              child: Text(
+              child: const Text(
                 'Logout',
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

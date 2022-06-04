@@ -1,3 +1,4 @@
+/*
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -5,105 +6,87 @@ import 'dart:async';
 import 'dart:io';
 
 class DatabaseHelper {
+  static final _databaseName = "MyDatabase.db";
+  static final _databaseVersion = 1;
+  String table = 'login_table';
+  static final String colId = 'id';
+  static final String colUName = 'name';
+  static final String colMobile = 'mobile';
+  static final String colPassword = 'password';
+  static final String colDate = 'date';
 
-  static final DatabaseHelper _databaseHelper=DatabaseHelper._createInstance();    // Singleton DatabaseHelper
-  static  Database? _database;                // Singleton Database
+  // make this a singleton class
+  DatabaseHelper._privateConstructor();
 
-  String loginTable = 'login_table';
-  String colId = 'id';
-  String colName = 'name';
-  String colMobile = 'mobile';
-  String colPassword = 'password';
-  String colDate = 'date';
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
-
-  factory DatabaseHelper() {
-
-    return _databaseHelper;
-  }
+  // only have a single app-wide reference to the database
+  Database? _database;
 
   Future<Database?> get database async {
-
-    if (_database == null) {
-      _database = await initializeDatabase();
-    }
+    if (_database != null) return _database;
+    // lazily instantiate the db the first time it is accessed
+    _database = await _initDatabase();
     return _database;
   }
 
-  Future<Database> initializeDatabase() async {
-    // Get the directory path for both Android and iOS to store database.
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'panskill.db';
-
-    // Open/create the database at a given path
-    var notesDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
-    return notesDatabase;
+  // this opens the database (and creates it if it doesn't exist)
+  _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, _databaseName);
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate);
   }
 
-  void _createDb(Database db, int newVersion) async {
-
-    await db.execute('CREATE TABLE $loginTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colName TEXT, '
-        '$colMobile INTEGER, $colPassword TEXT, $colDate TEXT)');
+  // SQL code to create the database table
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+          CREATE TABLE $table (
+            $colId INTEGER PRIMARY KEY,
+            $colUName TEXT NOT NULL,
+            $colMobile INTEGER NOT NULL
+          )
+          ''');
   }
 
-  // Fetch Operation: Get all note objects from database
-  Future<List<Map<String, dynamic>>?> getNoteMapList() async {
-    Database? db = await this.database;
+  // Helper methods
 
-//		var result = await db.rawQuery('SELECT * FROM $noteTable order by $colPriority ASC');
-    var result = await db?.query(loginTable, orderBy: '$colName ASC');
-    return result;
+  // Inserts a row in the database where each key in the Map is a column name
+  // and the value is the column value. The return value is the id of the
+  // inserted row.
+  Future<int?> insert(Map<String, dynamic> row) async {
+    Database? db = await instance.database;
+    return await db!.insert(table, row);
   }
 
- /* // Insert Operation: Insert a Note object to database
-  Future<int> insertNote(Note note) async {
-    Database db = await this.database;
-    var result = await db.insert(noteTable, note.toMap());
-    return result;
+  // All of the rows are returned as a list of maps, where each map is
+  // a key-value list of columns.
+  Future<List<Map<String, dynamic>>?> queryAllRows() async {
+    Database? db = await instance.database;
+    return await db!.query(table);
   }
 
-  // Update Operation: Update a Note object and save it to database
-  Future<int> updateNote(Note note) async {
-    var db = await this.database;
-    var result = await db.update(noteTable, note.toMap(), where: '$colId = ?', whereArgs: [note.id]);
-    return result;
+  // All of the methods (insert, query, update, delete) can also be done using
+  // raw SQL commands. This method uses a raw query to give the row count.
+  Future<int?> queryRowCount() async {
+    Database? db = await instance.database;
+    return Sqflite.firstIntValue(
+        await db!.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
-  // Delete Operation: Delete a Note object from database
-  Future<int> deleteNote(int id) async {
-    var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $noteTable WHERE $colId = $id');
-    return result;
+  // We are assuming here that the id column in the map is set. The other
+  // column values will be used to update the row.
+  Future<int> update(Map<String, dynamic> row) async {
+    Database? db = await instance.database;
+    int id = row[colId];
+    return await db!.update(table, row, where: '$colId = ?', whereArgs: [id]);
   }
 
-  // Get number of Note objects in database
-  Future<int> getCount() async {
-    Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $noteTable');
-    int result = Sqflite.firstIntValue(x);
-    return result;
+  // Deletes the row specified by the id. The number of affected rows is
+  // returned. This should be 1 as long as the row exists.
+  Future<int> delete(int id) async {
+    Database? db = await instance.database;
+    return await db!.delete(table, where: '$colId = ?', whereArgs: [id]);
   }
-
-  // Get the 'Map List' [ List<Map> ] and convert it to 'Note List' [ List<Note> ]
-  Future<List<Note>> getNoteList() async {
-
-    var noteMapList = await getNoteMapList(); // Get 'Map List' from database
-    int count = noteMapList.length;         // Count the number of map entries in db table
-
-    List<Note> noteList = List<Note>();
-    // For loop to create a 'Note List' from a 'Map List'
-    for (int i = 0; i < count; i++) {
-      noteList.add(Note.fromMapObject(noteMapList[i]));
-    }
-
-    return noteList;
-  }
-*/
 }
-
-
-
-
-
-
+*/

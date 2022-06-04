@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../Database/DatabaseHelper.dart';
+
 class RegisterDemo extends StatefulWidget {
   const RegisterDemo({Key? key}) : super(key: key);
 
@@ -11,6 +13,7 @@ class RegisterDemo extends StatefulWidget {
 class _RegisterDemoState extends State<RegisterDemo> {
   TextEditingController _controller_username = new TextEditingController();
   TextEditingController _controller_password = new TextEditingController();
+ // final dbHelper = DatabaseHelper.instance;
 
   Color mainColor = Color(0xff014c92);
 
@@ -105,7 +108,7 @@ class _RegisterDemoState extends State<RegisterDemo> {
   _onAlertWithCustomContentPressed(context) {
     Alert(
         context: context,
-        title: "LOGIN Here",
+        title: "Register Here",
         content: Column(
           children: <Widget>[
             TextField(
@@ -128,12 +131,22 @@ class _RegisterDemoState extends State<RegisterDemo> {
         buttons: [
           DialogButton(
             color: mainColor,
-            onPressed: () => Navigator.pop(context),
+           // onPressed:_insert(_controller_username.text,_controller_password.text),
             child: Text(
-              "LOGIN",
+              "REGISTER",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
         ]).show();
   }
+  // Button onPressed methods
+   /*_insert(String user,String pswd) async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.colUName : user,
+      DatabaseHelper.colPassword  : pswd
+    };
+    final id = await dbHelper.insert(row);
+    print('inserted row id: $id');
+  }*/
 }

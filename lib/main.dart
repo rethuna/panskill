@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:panskill/screenPanskill/verify_otp.dart';
 import 'screenPanskill/loginscreen.dart';
 
 void main()  {
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SignIn with Phone Number',
+      title: 'Panskill',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

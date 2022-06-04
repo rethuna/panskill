@@ -42,6 +42,7 @@ dependencies:
   sms_autofill: ^2.2.0
   alt_sms_autofill: ^1.0.0
   sms_receiver: ^0.4.1
+  fluttertoast: ^8.0.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -19,7 +19,7 @@ class _LoginDemoState extends State<LoginDemo> {
   bool isLoading = true;
   Color mainColor = Color(0xff014c92);
 
-  void getData(String signture) async {
+  void getData() async {
     String otp = OTP(4);
     final response = await http.post(
         Uri.parse("https://sapteleservices.com/SMS_API/sendsms.php"),
@@ -36,7 +36,9 @@ class _LoginDemoState extends State<LoginDemo> {
         }));
     if (response.statusCode == 200) {
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (c) => VerifyOTPScreen()));
+          .push(MaterialPageRoute(builder: (c) =>
+          VerifyOTPScreen(
+              mobile: dialedCodedigits + " " + mobileNumber.text, otp: otp)));
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Invalid credential")));
@@ -48,17 +50,6 @@ class _LoginDemoState extends State<LoginDemo> {
     });
   }
 
-  void submit(context) async {
-    if (mobileNumber.text == "") return;
-
-    var appSignatureID = await SmsAutoFill().getAppSignature;
-    Map sendOtpData = {
-      "mobile_number": dialedCodedigits + mobileNumber.text,
-      "app_signature_id": appSignatureID
-    };
-    getData(appSignatureID);
-    print(sendOtpData);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,86 +60,87 @@ class _LoginDemoState extends State<LoginDemo> {
       ),
       body: SingleChildScrollView(
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(height: 100),
-          Padding(
-            padding: const EdgeInsets.only(left: 28, right: 28),
-            child: Image.asset("asset/images/panlogo.png"),
-          ),
-          SizedBox(height: 100),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-            child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Mobile No',
-                  prefixIcon: const Icon(Icons.phone),
-                  prefix: Padding(
-                    padding: EdgeInsets.all(3),
-                    child: Text(dialedCodedigits),
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                maxLength: 10,
-                keyboardType: TextInputType.number,
-                controller: mobileNumber),
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  width: 150,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: mainColor,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 5)),
-                    onPressed: () {
-                      submit(context);
-                    },
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 100),
+              Padding(
+                padding: const EdgeInsets.only(left: 28, right: 28),
+                child: Image.asset("asset/images/panlogo.png"),
+              ),
+              SizedBox(height: 100),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Mobile No',
+                      prefixIcon: const Icon(Icons.phone),
+                      prefix: Padding(
+                        padding: EdgeInsets.all(3),
+                        child: Text(dialedCodedigits),
+                      ),
+                      border: OutlineInputBorder(),
                     ),
-                  ),
-                ),
-                SizedBox(width: 25),
-                Container(
-                  width: 150,
-                  height: 50,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: mainColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 5)),
-                      child: Text('Cancel',
+                    maxLength: 10,
+                    keyboardType: TextInputType.number,
+                    controller: mobileNumber),
+              ),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 150,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: mainColor,
+                            padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 5)),
+                        onPressed: () {
+                          getData();
+                        },
+                        child: const Text(
+                          'Login',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LoginDemo(),
-                        ));
-                      }),
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 25),
+                    Container(
+                      width: 150,
+                      height: 50,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: mainColor,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 50, vertical: 5)),
+                          child: Text('Cancel',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => LoginDemo(),
+                            ));
+                          }),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 100),
-          Container(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => RegisterDemo()));
-              },
-              child: new Text("New User Register Here"),
-            ),
-          )
-        ],
-      )),
+              ),
+              SizedBox(height: 100),
+              Container(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => RegisterDemo()));
+                  },
+                  child: new Text("New User Register Here"),
+                ),
+              )
+            ],
+          )),
     );
   }
 }

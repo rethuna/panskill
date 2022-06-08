@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:panskill/screenPanskill/RegisterScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:panskill/screenPanskill/verify_otp.dart';
@@ -33,8 +34,10 @@ class _LoginDemoState extends State<LoginDemo> {
               ".Please submit for phone number verification.PANSKILL CONNECT PRIVATE LIMITED.",
           'routetype': "1",
           'tid': "1607100000000187941"
+
         }));
     if (response.statusCode == 200) {
+
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (c) =>
           VerifyOTPScreen(
@@ -49,14 +52,14 @@ class _LoginDemoState extends State<LoginDemo> {
       isLoading = false;
     });
   }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("PANSKILL"),
         backgroundColor: mainColor,
+        centerTitle: true,
+        titleTextStyle: TextStyle(fontSize: 16.0) ,
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -78,7 +81,7 @@ class _LoginDemoState extends State<LoginDemo> {
                         padding: EdgeInsets.all(3),
                         child: Text(dialedCodedigits),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     maxLength: 10,
                     keyboardType: TextInputType.number,
@@ -97,7 +100,11 @@ class _LoginDemoState extends State<LoginDemo> {
                             padding:
                             EdgeInsets.symmetric(horizontal: 50, vertical: 5)),
                         onPressed: () {
-                          getData();
+                          if(mobileNumber.text==""){
+                            showToast("Enter mobile number");
+                          }else{
+                            getData();
+                          }
                         },
                         child: const Text(
                           'Login',
@@ -144,7 +151,16 @@ class _LoginDemoState extends State<LoginDemo> {
     );
   }
 }
-
+void showToast(String msg) {
+  Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor:  Color(0xff014c92),
+      textColor: Colors.white,
+      fontSize: 16.0);
+}
 String OTP(int len) {
   var rndnumber = "";
   var rnd = new Random();

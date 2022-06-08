@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:panskill/screenPanskill/HomePage.dart';
 import 'package:panskill/screenPanskill/verify_otp.dart';
-import 'screenPanskill/loginscreen.dart';
+import 'screenPanskill/Loginscreen.dart';
 
 void main()  {
   runApp(MyApp());
@@ -14,8 +15,9 @@ class MyApp extends StatelessWidget {
       title: 'Panskill',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'Pacifico'
       ),
-      home: LoginDemo(),
+      home: HomeScreen(),
     );
   }
 }

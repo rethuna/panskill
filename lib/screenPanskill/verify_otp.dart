@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pinput/pin_put/pin_put.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'package:http/http.dart' as http;
+
+import 'HomePage.dart';
 
 class VerifyOTPScreen extends StatefulWidget {
   final String otp;
@@ -22,7 +22,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
     String otp;
   final String mobile;
   String codeValue = "";
-  Color mainColor = Color(0xff014c92);
+  Color mainColor = const Color(0xff014c92);
   String otpNumber = "";
   bool isLoading = true;
 
@@ -36,6 +36,12 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("PANSKILL"),
+        backgroundColor: mainColor,
+        titleTextStyle: TextStyle(fontSize: 16.0) ,
+        centerTitle: true,
+      ),
       resizeToAvoidBottomInset: false,
       // backgroundColor: Color(0xfff7f6fb),
       body: SafeArea(
@@ -113,10 +119,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                             controller: _fieldThree, first: false, last: false),
                         OtpInput(
                             controller: _fieldFour, first: false, last: true)
-                        /* _textFieldOTP(first: true, last: false),
-                        _textFieldOTP(first: false, last: false),
-                        _textFieldOTP(first: false, last: false),
-                        _textFieldOTP(first: false, last: true),*/
+
                       ],
                     ),
                     SizedBox(
@@ -131,10 +134,10 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                                 _fieldTwo.text +
                                 _fieldThree.text +
                                 _fieldFour.text;
-                            print("otp " + otp);
-                            print("otptyped " + otpNumber);
                             if (otpNumber == otp) {
                               showToast("OTP is verified successfully");
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => HomeScreen()));
                             } else {
                               showToast("OTP is verified failed");
                             }

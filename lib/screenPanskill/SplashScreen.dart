@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'loginscreen.dart';
+import 'Loginscreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +29,7 @@ class SplashDemoState extends State<SplashDemo> {
   void initState() {
     super.initState();
     Timer(
-        Duration(seconds: 3),
+        Duration(seconds: 2),
         () => Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => LoginDemo())));
   }

@@ -23,6 +23,8 @@ class _RegisterDemoState extends State<RegisterDemo> {
       appBar: AppBar(
         title: Text("PANSKILL"),
         backgroundColor: mainColor,
+        centerTitle: true,
+        titleTextStyle: TextStyle(fontSize: 16.0) ,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

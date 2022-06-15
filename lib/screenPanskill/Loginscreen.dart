@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:panskill/screenPanskill/RegisterScreen.dart';
 import 'package:http/http.dart' as http;
-import 'package:panskill/screenPanskill/verify_otp.dart';
-import 'package:sms_autofill/sms_autofill.dart';
+import 'package:panskill/screenPanskill/pin_screen.dart';
+import 'package:panskill/screenPanskill/pincheck_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../Model/userData.dart';
+import 'HomePage.dart';
 
 class LoginDemo extends StatefulWidget {
   const LoginDemo({Key? key}) : super(key: key);
@@ -16,42 +21,18 @@ class LoginDemo extends StatefulWidget {
 
 class _LoginDemoState extends State<LoginDemo> {
   String dialedCodedigits = "+91";
-  TextEditingController mobileNumber = TextEditingController();
+  final TextEditingController mobileNumber = TextEditingController();
   bool isLoading = true;
-  Color mainColor = Color(0xff014c92);
+  User usrModel = User();
+  String? token = "";
+  Color mainColor = const Color(0xff014c92);
 
-  void getData() async {
-    String otp = OTP(4);
-    final response = await http.post(
-        Uri.parse("https://sapteleservices.com/SMS_API/sendsms.php"),
-        body: ({
-          'username': "panskill",
-          'password': "d99140",
-          'mobile': dialedCodedigits + mobileNumber.text,
-          'sendername': "PASKCO",
-          'message': "The OTP for your registration at Pan Skill Connect is " +
-              otp +
-              ".Please submit for phone number verification.PANSKILL CONNECT PRIVATE LIMITED.",
-          'routetype': "1",
-          'tid': "1607100000000187941"
-
-        }));
-    if (response.statusCode == 200) {
-
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (c) =>
-          VerifyOTPScreen(
-              mobile: dialedCodedigits + " " + mobileNumber.text, otp: otp)));
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Invalid credential")));
-    }
-    // var json = jsonDecode(response.body);
-    setState(() {
-      // _data = Users.fromJson(json);
-      isLoading = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    checkPermission();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,108 +40,147 @@ class _LoginDemoState extends State<LoginDemo> {
         title: const Text("PANSKILL"),
         backgroundColor: mainColor,
         centerTitle: true,
-        titleTextStyle: TextStyle(fontSize: 16.0) ,
+        titleTextStyle: const TextStyle(fontSize: 16.0),
       ),
       body: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 100),
-              Padding(
-                padding: const EdgeInsets.only(left: 28, right: 28),
-                child: Image.asset("asset/images/panlogo.png"),
-              ),
-              SizedBox(height: 100),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Mobile No',
-                      prefixIcon: const Icon(Icons.phone),
-                      prefix: Padding(
-                        padding: EdgeInsets.all(3),
-                        child: Text(dialedCodedigits),
-                      ),
-                      border: const OutlineInputBorder(),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 100),
+          Padding(
+            padding: const EdgeInsets.only(left: 28, right: 28),
+            child: Image.asset("data_repo/images/panlogo.png"),
+          ),
+          const SizedBox(height: 100),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Mobile No',
+                  prefixIcon: const Icon(Icons.phone),
+                  prefix: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: Text(dialedCodedigits),
+                  ),
+                  border: const OutlineInputBorder(),
+                ),
+                maxLength: 10,
+                keyboardType: TextInputType.number,
+                controller: mobileNumber),
+          ),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: 150,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: mainColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 5)),
+                    onPressed: () async {
+                      if (mobileNumber.text == "") {
+                        showToast("Enter mobile number");
+                      } else {
+                        var check = await loginData();
+                        print(check.toString());
+                        if (check == "true") {
+                          showToast("Login Success");
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (c) => PinChkScreen(
+                                    token: token.toString(),
+                                  )));
+                        } else {
+                          showToast("Login failed");
+                        }
+                      }
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
-                    maxLength: 10,
-                    keyboardType: TextInputType.number,
-                    controller: mobileNumber),
-              ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 150,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: mainColor,
-                            padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 5)),
-                        onPressed: () {
-                          if(mobileNumber.text==""){
-                            showToast("Enter mobile number");
-                          }else{
-                            getData();
-                          }
-                        },
-                        child: const Text(
-                          'Login',
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Container(
+                  width: 150,
+                  height: 50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: mainColor,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 5)),
+                      child: const Text('Cancel',
                           style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 25),
-                    Container(
-                      width: 150,
-                      height: 50,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: mainColor,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 50, vertical: 5)),
-                          child: Text('Cancel',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => LoginDemo(),
-                            ));
-                          }),
-                    ),
-                  ],
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LoginDemo(),
+                        ));
+                      }),
                 ),
-              ),
-              SizedBox(height: 100),
-              Container(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => RegisterDemo()));
-                  },
-                  child: new Text("New User Register Here"),
-                ),
-              )
-            ],
-          )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 100),
+          Container(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => RegisterDemo()));
+              },
+              child: new Text("New User Register Here"),
+            ),
+          )
+        ],
+      )),
     );
   }
+
+  Future<String> loginData() async {
+    String result;
+    final response =
+        await http.post(Uri.parse("http://panskillconnect.com/api/login"),
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: ({
+              'mobile': mobileNumber.text,
+            }));
+    setState(() {
+      Map<String, dynamic> resposne = jsonDecode(response.body);
+      usrModel = User.fromJson(resposne);
+    });
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      token = usrModel.meta?.token;
+      String? name = usrModel.data?.name;
+      print('Login success');
+      print(" $token");
+      result = "true";
+      return result;
+    } else {
+      result = "false";
+      return result;
+    }
+  }
 }
+
 void showToast(String msg) {
   Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
-      backgroundColor:  Color(0xff014c92),
+      backgroundColor: Color(0xff014c92),
       textColor: Colors.white,
       fontSize: 16.0);
 }
+
 String OTP(int len) {
   var rndnumber = "";
   var rnd = new Random();
@@ -169,4 +189,22 @@ String OTP(int len) {
   }
   print(rndnumber);
   return rndnumber;
+}
+
+Future<void> checkPermission() async {
+  Map<Permission, PermissionStatus> statuses = await [
+    Permission.sms,
+    Permission.phone,
+    //add more permission to request here.
+  ].request();
+
+  if (statuses[Permission.sms]!.isDenied) {
+    //check each permission status after.
+    print("Location permission is denied.");
+  }
+
+  if (statuses[Permission.phone]!.isDenied) {
+    //check each permission status after.
+    print("Camera permission is denied.");
+  }
 }

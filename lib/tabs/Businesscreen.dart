@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../screenPanskill/HomePage.dart';
+import 'gridview.dart';
 class BusinessPage extends StatelessWidget {
   const BusinessPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Color mainColor = Color(0xff014c92);
-
+    MyGridView myGridView=new MyGridView();
     return Scaffold(
       appBar: AppBar(
         title: Text("PANSKILL"),
@@ -16,29 +17,7 @@ class BusinessPage extends StatelessWidget {
 
         backgroundColor: mainColor,
       ),
-      backgroundColor: Colors.green,
-      body: Container(
-        child: Center(
-          child: Column(
-            // center the children
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.adb,
-                size: 160.0,
-                color: Colors.white,
-              ),
-              Text(
-                "Business tabs",
-                style: TextStyle(color: Colors.white),
-              )
-
-            ],
-          ),
-
-        ),
-
-      ),
+      body: myGridView.build(),
       drawer: MyDrawerDirectory(),
     );
   }

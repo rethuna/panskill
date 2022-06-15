@@ -1,9 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:panskill/tabs/Businesscreen.dart';
 import 'package:panskill/tabs/Hometab.dart';
-
 import '../tabs/Servicescreen.dart';
-import 'Loginscreen.dart';
 import '../tabs/Profilescreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   //list of widgets to call ontap
 
   final widgetOptions = [
-    Home_tab(),
     BusinessPage(),
+    Home_tab(),
     ProfilePage(),
     ServicePage(),
     ProfilePage(),
@@ -38,12 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Center(
         child: widgetOptions.elementAt(_currentIndex),
@@ -83,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
         showSelectedLabels: true,
         showUnselectedLabels: true,
       ),
-
     );
   }
 }
@@ -111,7 +106,7 @@ class MyDrawerDirectory extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            currentAccountPicture: Image.asset("asset/images/mob_logo.png"),
+            currentAccountPicture: Image.asset("data_repo/images/mob_logo.png"),
           ),
           ListTile(
             leading: Icon(
@@ -178,7 +173,6 @@ class MyDrawerDirectory extends StatelessWidget {
           ),
         ],
       ),
-      );
-
+    );
   }
 }

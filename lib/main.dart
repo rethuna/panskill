@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:panskill/screenPanskill/HomePage.dart';
-import 'package:panskill/screenPanskill/verify_otp.dart';
 import 'screenPanskill/Loginscreen.dart';
 
-void main()  {
+void main() {
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,9 +12,19 @@ class MyApp extends StatelessWidget {
       title: 'Panskill',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        fontFamily: 'Pacifico'
+        fontFamily: 'CharisSIL',
+        brightness: Brightness.light,
+        /* light theme settings */
       ),
-      home: HomeScreen(),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.red,
+        fontFamily: 'CharisSIL',
+        brightness: Brightness.dark,
+        /* dark theme settings */
+      ),
+      themeMode: ThemeMode.light,
+      home: LoginDemo()
     );
   }
 }
+

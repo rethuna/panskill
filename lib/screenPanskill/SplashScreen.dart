@@ -38,7 +38,7 @@ class SplashDemoState extends State<SplashDemo> {
     return Container(
         color: Color(0xff033B6F),
         child: Image(
-          image: AssetImage('asset/images/panlogo.png'),
+          image: AssetImage('data_repo/images/panlogo.png'),
         ));
   }
 }

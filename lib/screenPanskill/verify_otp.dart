@@ -3,24 +3,26 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:panskill/screenPanskill/pin_screen.dart';
 
 import 'HomePage.dart';
 
 class VerifyOTPScreen extends StatefulWidget {
   final String otp;
   final String mobile;
-
-  VerifyOTPScreen({Key? key, required this.mobile, required this.otp})
+  final String token;
+  VerifyOTPScreen({Key? key, required this.mobile, required this.otp, required this.token})
       : super(key: key);
 
   @override
   State<VerifyOTPScreen> createState() =>
-      _VerifyOTPScreenState(this.mobile, this.otp);
+      _VerifyOTPScreenState(this.mobile, this.otp,this.token);
 }
 
 class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
-    String otp;
+  String otp;
   final String mobile;
+  final String token;
   String codeValue = "";
   Color mainColor = const Color(0xff014c92);
   String otpNumber = "";
@@ -31,7 +33,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
   final TextEditingController _fieldThree = TextEditingController();
   final TextEditingController _fieldFour = TextEditingController();
 
-  _VerifyOTPScreenState(this.mobile, this.otp);
+  _VerifyOTPScreenState(this.mobile, this.otp, this.token);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
       appBar: AppBar(
         title: const Text("PANSKILL"),
         backgroundColor: mainColor,
-        titleTextStyle: TextStyle(fontSize: 16.0) ,
+        titleTextStyle: TextStyle(fontSize: 16.0),
         centerTitle: true,
       ),
       resizeToAvoidBottomInset: false,
@@ -72,7 +74,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset(
-                  'asset/images/otp.png',
+                  'data_repo/images/otp.png',
                 ),
               ),
               SizedBox(
@@ -119,7 +121,6 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                             controller: _fieldThree, first: false, last: false),
                         OtpInput(
                             controller: _fieldFour, first: false, last: true)
-
                       ],
                     ),
                     SizedBox(
@@ -136,8 +137,10 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                                 _fieldFour.text;
                             if (otpNumber == otp) {
                               showToast("OTP is verified successfully");
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => HomeScreen()));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (c) => PinGenScreen(
+                                    token: token.toString(),
+                                  )));
                             } else {
                               showToast("OTP is verified failed");
                             }
@@ -155,7 +158,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                             ),
                           ),
                         ),
-                        child: Padding(
+                        child: const Padding(
                           padding: EdgeInsets.all(14.0),
                           child: Text(
                             'Verify and continue',
@@ -174,7 +177,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 //mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     "Didn't get OTP? ",
                     style: TextStyle(
                       fontSize: 14,
@@ -185,7 +188,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                     getData();
+                      getData();
                     },
                     child: Text(
                       "Resend New OTP",
@@ -206,7 +209,6 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
     );
   }
 
-
   void getData() async {
     String otpvalue = OTP(4);
     final response = await http.post(
@@ -224,7 +226,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
         }));
     if (response.statusCode == 200) {
       showToast("OTP Resend successfully");
-      otp=otpvalue;
+      otp = otpvalue;
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Invalid credential")));

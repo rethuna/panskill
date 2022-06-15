@@ -42,6 +42,8 @@ dependencies:
   sms_receiver: ^0.4.1
   fluttertoast: ^8.0.9
   flutter_icons: ^1.0.0+1
+  permission_handler: ^9.2.0
+  shared_preferences: ^2.0.15
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,14 +71,23 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
   assets:
-     - asset/images/
+    - data_repo/images/
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
   # To add assets to your application, add an assets section, like this:
-#  fonts:
-#    - family: Pacifico
-#      fonts:
-#        - asset: fonts/Pacifico-Regular.ttf
+  fonts:
+    - family: CharisSIL
+      fonts:
+        - asset: data_repo/fonts/CharisSIL-Regular.ttf
+          weight: 700
+    - family: Joan
+      fonts:
+        - asset: data_repo/fonts/Joan-Regular.ttf
+          weight: 700
+    - family: CormorantGaramond
+      fonts:
+        - asset: data_repo/fonts/CormorantGaramond-Bold.ttf
+          weight: 700

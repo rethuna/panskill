@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:panskill/screenPanskill/Users.dart';
+import 'package:panskill/Model/Users.dart';
 import 'dart:math';
 
 class ApiDemo extends StatefulWidget {

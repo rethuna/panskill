@@ -159,8 +159,6 @@ class _LoginDemoState extends State<LoginDemo> {
     if (response.statusCode == 201 || response.statusCode == 200) {
       token = usrModel.meta?.token;
       String? name = usrModel.data?.name;
-      print('Login success');
-      print(" $token");
       result = "true";
       return result;
     } else {

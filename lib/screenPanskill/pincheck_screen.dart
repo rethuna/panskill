@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:panskill/screenPanskill/Loginscreen.dart';
 
 import 'HomePage.dart';
 
@@ -171,7 +172,7 @@ class _PinChkScreenState extends State<PinChkScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                /*  GestureDetector(
+                  /*  GestureDetector(
                     onTap: () {
                       getData();
                     },
@@ -205,19 +206,18 @@ class _PinChkScreenState extends State<PinChkScreen> {
               'pin': pswdNumber,
             }),
             encoding: Encoding.getByName("utf-8"));
-    setState(() {
-      // _data = Users.fromJson(json);
-      isLoading = false;
-    });
-    var json = jsonDecode(response.body);
-    print(json);
+
     if (response.statusCode == 201 || response.statusCode == 200) {
-      print(response.body);
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (c) => HomeScreen(),
-      ));
-    } else {
-      print("failed");
+      var json = jsonDecode(response.body);
+      String result = json['response'];
+      if (result == 'Pin matched') {
+        showToast("Login Success");
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (c) => HomeScreen(),
+        ));
+      } else {
+        showToast(result);
+      }
     }
   }
 

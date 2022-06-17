@@ -9,7 +9,6 @@ class MyGridView {
       },
       child: Card(
           elevation: 2,
-
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,

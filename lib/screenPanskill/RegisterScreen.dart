@@ -8,7 +8,6 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Database/DatabaseHelper.dart';
-import '../Model/Errorr.dart';
 
 class RegisterDemo extends StatefulWidget {
   const RegisterDemo({Key? key}) : super(key: key);
@@ -23,7 +22,6 @@ class _RegisterDemoState extends State<RegisterDemo> {
   String dialedCodedigits = "+91";
   bool isLoading = true;
   Register regModel = Register();
-  ErrorMsg errorModel = ErrorMsg();
   String? token = "";
 
   // final dbHelper = DatabaseHelper.instance;
@@ -207,31 +205,36 @@ class _RegisterDemoState extends State<RegisterDemo> {
 
   // Button onPressed methods
   void registerData(String userType) async {
-    final response =
-        await http.post(Uri.parse("http://panskillconnect.com/api/register"),
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: ({
-              'name': _controller_username.text,
-              'mobile': _controller_mobile.text,
-              'roles[]': userType.trim(),
-            }));
-    print(response.statusCode);
-    setState(() {
-      Map<String, dynamic> resposne = jsonDecode(response.body);
-      regModel = Register.fromJson(resposne);
-    });
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      token = regModel.meta?.token;
-      String? name = regModel.data?.name;
-      _save(token!, name!);
-      print(" $token");
-      showToast("Register success");
-      sendOTP();
-    } else {
-      showToast("Mobile Number Already Exist");
+    try {
+      final response =
+          await http.post(Uri.parse("http://panskillconnect.com/api/register"),
+              headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: ({
+                'name': _controller_username.text,
+                'mobile': _controller_mobile.text,
+                'roles[]': userType.trim(),
+              }));
+      print(response.body);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        setState(() {
+          Map<String, dynamic> resposne = jsonDecode(response.body);
+          regModel = Register.fromJson(resposne);
+        });
+        token = regModel.meta?.token;
+        String? name = regModel.data?.name;
+        _save(token!, name!);
+        print(" $token");
+        showToast("Register success");
+        sendOTP();
+      } else if (response.statusCode == 422) {
+        showToast("Mobile Number Already Exist");
+      }
+    } catch (e) {
+      print(e);
     }
     // var json = jsonDecode(response.body);
   }
@@ -265,7 +268,8 @@ class _RegisterDemoState extends State<RegisterDemo> {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (c) => VerifyOTPScreen(
               mobile: dialedCodedigits + " " + _controller_mobile.text,
-              otp: otp, token: token.toString())));
+              otp: otp,
+              token: token.toString())));
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Invalid credential")));

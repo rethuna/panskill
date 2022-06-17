@@ -159,35 +159,7 @@ class _PinChkScreenState extends State<PinChkScreen> {
               SizedBox(
                 height: 18,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                //mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  const Text(
-                    "Didn't get OTP? ",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black38,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  /*  GestureDetector(
-                    onTap: () {
-                      getData();
-                    },
-                    child: Text(
-                      "Resend New OTP",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: mainColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),*/
-                ],
-              ),
+
             ],
           ),
         ),
@@ -239,7 +211,6 @@ String OTP(int len) {
   for (var i = 0; i < len; i++) {
     rndnumber = rndnumber + rnd.nextInt(9).toString();
   }
-  print(rndnumber);
   return rndnumber;
 }
 

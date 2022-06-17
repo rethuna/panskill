@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:panskill/screenPanskill/pin_screen.dart';
 import 'package:panskill/screenPanskill/pincheck_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Model/userData.dart';
 import 'HomePage.dart';
@@ -159,6 +160,7 @@ class _LoginDemoState extends State<LoginDemo> {
     if (response.statusCode == 201 || response.statusCode == 200) {
       token = usrModel.meta?.token;
       String? name = usrModel.data?.name;
+      _save(token!, mobileNumber.text);
       result = "true";
       return result;
     } else {
@@ -167,7 +169,14 @@ class _LoginDemoState extends State<LoginDemo> {
     }
   }
 }
+_save(String token, String mobile) async {
+  final prefs = await SharedPreferences.getInstance();
 
+  prefs.setString('token', token);
+  prefs.setString('mobile', mobile);
+
+  print('saved $token');
+}
 void showToast(String msg) {
   Fluttertoast.showToast(
       msg: msg,

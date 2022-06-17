@@ -50,7 +50,6 @@ class _Home_tabState extends State<Home_tab> {
         )
         // The ListView that displays photos
             :
-
              GridView.builder(
                 itemCount: _loadedPhotos.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -59,7 +58,7 @@ class _Home_tabState extends State<Home_tab> {
                   return Padding(
                       padding: const EdgeInsets.all(5),
                       child: Container(
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                               image: new DecorationImage(
                                   image: new NetworkImage(
                                       _loadedPhotos[index]["thumbnailUrl"]),

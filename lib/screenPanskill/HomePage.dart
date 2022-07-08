@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   //list of widgets to call ontap
 
   final widgetOptions = [
+    ServicePage(),
     BusinessPage(),
-    Home_tab(),
     ProfilePage(),
     ServicePage(),
     ProfilePage(),

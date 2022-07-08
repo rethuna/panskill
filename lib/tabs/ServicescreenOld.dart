@@ -1,51 +1,104 @@
 import 'dart:convert';
-
+import 'dart:developer';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:panskill/Model/Buisiness.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:panskill/Model/Services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../screenPanskill/HomePage.dart';
-import 'gridview.dart';
 
-class BusinessPage extends StatefulWidget {
-  const BusinessPage({Key? key}) : super(key: key);
+class ServicePage extends StatefulWidget {
+  const ServicePage({Key? key}) : super(key: key);
 
   @override
-  State<BusinessPage> createState() => _BusinessPageState();
+  State<ServicePage> createState() => _ServicePageState();
 }
 
-class _BusinessPageState extends State<BusinessPage> {
+class _ServicePageState extends State<ServicePage> {
   String? mobile, token;
-  Business buisModel = Business(data: []);
+  Services servModel = Services(data: []);
   List _loadedPhotos = [];
+
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     _loadDetails();
   }
 
   @override
   Widget build(BuildContext context) {
-    Color mainColor = Color(0xff014c92);
-    MyGridView myGridView = new MyGridView();
     return Scaffold(
-      appBar: AppBar(
-        title: Text("PANSKILL"),
-        centerTitle: true,
-        titleTextStyle: TextStyle(fontSize: 16.0),
-        backgroundColor: mainColor,
+      body: Stack(
+        children: <Widget>[dashBg, content],
       ),
-      body: SafeArea(
-        child: buisModel.data.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-        // The ListView that displays photos
-            : _build(),
-      ),
-      drawer: MyDrawerDirectory(),
     );
   }
+
+  get dashBg => Column(
+    children: <Widget>[
+      Expanded(
+        child: Container(color: Colors.deepPurple),
+        flex: 2,
+      ),
+      Expanded(
+        child: Container(color: Colors.transparent),
+        flex: 5,
+      ),
+    ],
+  );
+
+  get content => Container(
+    child: Column(
+      children: <Widget>[
+        header,
+        grid,
+      ],
+    ),
+  );
+
+  get header => ListTile(
+    contentPadding: EdgeInsets.only(left: 20, right: 20, top: 20),
+    title: Text(
+      'Panskill',
+      style: TextStyle(color: Colors.white),
+    ),
+    subtitle: Text(
+      '10 items',
+      style: TextStyle(color: Colors.blue),
+    ),
+    trailing: CircleAvatar(),
+  );
+
+  get grid => Expanded(
+    child: Container(
+      padding: EdgeInsets.only(left: 5, right: 5, bottom: 5),
+      child: GridView.count(
+        primary: true,
+        padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 1),
+        crossAxisCount: 3,
+        childAspectRatio: 0.85,
+        mainAxisSpacing: 1.0,
+        crossAxisSpacing: 1.0,
+        children: <Widget>[
+          for (var i = 0; i < servModel.data.length; i++)
+            servModel.data[i].icon.toString().endsWith("null")
+                ? getStructuredGridCell_(
+              servModel.data[i].name.toString(),
+              "electrical.png",
+            )
+                : getStructuredGridCell(
+              servModel.data[i].name.toString(),
+              servModel.data[i].icon.toString(),
+            ),
+        ],
+      ),
+    ),
+  );
 
   GestureDetector getStructuredGridCell_(name, image) {
     // Wrap the child under GestureDetector to setup a on click action
@@ -64,11 +117,11 @@ class _BusinessPageState extends State<BusinessPage> {
               verticalDirection: VerticalDirection.down,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(5),
                   child: Container(
                     alignment: Alignment.topCenter,
-                    child: Image(
-                        image: AssetImage('data_repo/images/' + image)),
+                    child:
+                    Image(image: AssetImage('data_repo/images/' + image)),
                   ),
                 ),
                 Padding(
@@ -94,7 +147,6 @@ class _BusinessPageState extends State<BusinessPage> {
     // Wrap the child under GestureDetector to setup a on click action
     return GestureDetector(
       onTap: () {
-
         print("onTap called.$name");
       },
       child: Card(
@@ -140,30 +192,6 @@ class _BusinessPageState extends State<BusinessPage> {
     );
   }
 
-
-  GridView _build() {
-    return GridView.count(
-      primary: true,
-      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 1),
-      crossAxisCount: 3,
-      childAspectRatio: 0.85,
-      mainAxisSpacing: 1.0,
-      crossAxisSpacing: 1.0,
-      children: <Widget>[
-        for (var i = 0; i < buisModel.data.length; i++)
-          buisModel.data[i].icon.toString().endsWith("null")
-              ? getStructuredGridCell_(
-            buisModel.data[i].name.toString(),
-            "electrical.png",
-          )
-              : getStructuredGridCell(
-            buisModel.data[i].name.toString(),
-            buisModel.data[i].icon.toString(),
-          ),
-      ],
-    );
-  }
-
   _loadDetails() async {
     print('inside save preference');
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -172,10 +200,33 @@ class _BusinessPageState extends State<BusinessPage> {
     getData();
   }
 
+  Future<List<String>> fetchGalleryData() async {
+    try {
+      final response = await http
+          .get(Uri.parse("http://panskillconnect.com/api/services"), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+      if (response.statusCode == 200) {
+        return compute(parseGalleryData, response.body);
+      } else {
+        throw Exception('Failed to load');
+      }
+    } on SocketException catch (e) {
+      throw Exception('Failed to load');
+    }
+  }
+
+  List<String> parseGalleryData(String responseBody) {
+    final parsed = List<String>.from(json.decode(responseBody));
+    return parsed;
+  }
+
   void getData() async {
     try {
       final response = await http
-          .get(Uri.parse("http://panskillconnect.com/api/business_categories"), headers: {
+          .get(Uri.parse("http://panskillconnect.com/api/services"), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
@@ -184,12 +235,10 @@ class _BusinessPageState extends State<BusinessPage> {
       if (response.statusCode == 201 || response.statusCode == 200) {
         setState(() {
           Map<String, dynamic> resposne = jsonDecode(response.body);
-          buisModel = Business.fromJson(resposne);
-          _loadedPhotos = buisModel.data;
+          servModel = Services.fromJson(resposne);
+          _loadedPhotos = servModel.data;
         });
-      } else if (response.statusCode == 422) {
-
-      }
+      } else if (response.statusCode == 422) {}
     } catch (e) {
       print(e);
     }

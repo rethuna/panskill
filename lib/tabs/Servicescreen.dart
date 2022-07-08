@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:panskill/Model/Services.dart';
+import 'package:panskill/screenPanskill/Skilled_Service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../screenPanskill/HomePage.dart';
@@ -19,150 +19,387 @@ class ServicePage extends StatefulWidget {
 }
 
 class _ServicePageState extends State<ServicePage> {
+  Color mainColor = Color(0xff014c92);
   String? mobile, token;
   Services servModel = Services(data: []);
   List _loadedPhotos = [];
+  var _displayAll = false;
+  Widget appBarTitle = new Text("PANSKILL");
+  Icon actionIcon = new Icon(Icons.search);
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadDetails();
   }
 
   @override
   Widget build(BuildContext context) {
-    Color mainColor = Color(0xff014c92);
     return Scaffold(
-      backgroundColor: Colors.black26,
       appBar: AppBar(
-        title: Text("PANSKILL"),
-        centerTitle: true,
-        titleTextStyle: TextStyle(fontSize: 16.0),
         backgroundColor: mainColor,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            child: Image(
+              image: AssetImage('data_repo/images/logo.png'),
+              width: 30,
+              height: 30,
+            ),
+          ),
+        ),
+        title: Text(
+          'Panskill',
+          style: TextStyle(
+            fontSize: 12.0,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        elevation: 0.0,
+        actions: <Widget>[
+          SizedBox(width: 20.0,),
+          Wrap(
+            spacing: 5, // space between two icons
+            children: <Widget>[
+              new IconButton(
+                icon: actionIcon,
+                onPressed: () {
+                  setState(() {
+                    if (this.actionIcon.icon == Icons.search) {
+                      this.actionIcon = new Icon(Icons.close);
+                      this.appBarTitle = new TextField(
+                        style: new TextStyle(
+                          color: Colors.white,
+                        ),
+                        decoration: new InputDecoration(
+                            prefixIcon:
+                            new Icon(Icons.search, color: Colors.white),
+                            hintText: "Search...",
+                            hintStyle: new TextStyle(color: Colors.white)),
+                      );
+                    } else {
+                      this.actionIcon = new Icon(Icons.search);
+                      this.appBarTitle =  Text("PANSKILL",style: TextStyle(fontSize: 5),);
+                    }
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.notifications,
+                  color: Colors.white,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ],
       ),
-      body: SafeArea(
-        child: servModel.data.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            // The ListView that displays photos
-            : _build(),
+      body: Stack(
+        children: <Widget>[dashBg, content],
       ),
       drawer: MyDrawerDirectory(),
+
     );
   }
 
-  GestureDetector getStructuredGridCell_(name, image) {
+  _top() {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+          color: Colors.deepPurple,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30))),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage("data_repo/images/logo.png"),
+                  ),
+                  SizedBox(width: 10.0),
+                  Text(
+                    "Hi..there..",
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.notifications,
+                  color: Colors.white,
+                ),
+                onPressed: () {},
+              )
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          TextField(
+            decoration: InputDecoration(
+              hintText: "Search",
+              fillColor: Colors.white,
+              filled: true,
+              suffixIcon: Icon(Icons.filter_list),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: Colors.transparent)),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  get dashBg => Column(
+        children: <Widget>[
+          Expanded(
+            child: Container(color: mainColor),
+            flex: 3,
+          ),
+          Expanded(
+            child: Container(color: Colors.transparent),
+            flex: 5,
+          ),
+        ],
+      );
+
+  get content => Container(
+        child: Column(
+          children: <Widget>[
+          //  header,
+            grid,
+          ],
+        ),
+      );
+
+  get header => ListTile(
+        contentPadding: const EdgeInsets.only(left: 50, right: 20, top: 50),
+        title: const Text(
+          'Panskill',
+          style: TextStyle(color: Colors.white),
+        ),
+        subtitle: Text(
+          '10 items',
+          style: TextStyle(color: Colors.white70),
+        ),
+        leading: CircleAvatar(
+          child: Image(
+            image: AssetImage('data_repo/images/logo.png'),
+            width: 30,
+            height: 30,
+          ),
+        ),
+        trailing: Wrap(
+          spacing: 5, // space between two icons
+          children: <Widget>[
+            new IconButton(
+              icon: actionIcon,
+              onPressed: () {
+                setState(() {
+                  if (this.actionIcon.icon == Icons.search) {
+                    this.actionIcon = new Icon(Icons.close);
+                    this.appBarTitle = new TextField(
+                      style: new TextStyle(
+                        color: Colors.white,
+                      ),
+                      decoration: new InputDecoration(
+                          prefixIcon:
+                          new Icon(Icons.search, color: Colors.white),
+                          hintText: "Search...",
+                          hintStyle: new TextStyle(color: Colors.white)),
+                    );
+                  } else {
+                    this.actionIcon = new Icon(Icons.search);
+                    this.appBarTitle =  Text("PANSKILL",style: TextStyle(fontSize: 5),);
+                  }
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      );
+
+  get headLine => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 150, horizontal: 1),
+        child: Text(
+          'Panskill',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+
+  get grid => Expanded(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white70,
+                style: BorderStyle.solid,
+                width: 1.0,
+              ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0)),
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(15),
+          child: GridView.count(
+            crossAxisCount: 3,
+            childAspectRatio: 0.85,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            children: <Widget>[
+              for (var i = 0; i < servModel.data.length; i++)
+                servModel.data[i].icon.toString().endsWith("null")
+                    ? getStructuredGridCell_(
+                        servModel.data[i].name.toString(),
+                        "electrical.png",servModel.data[i].id,
+                      )
+                    : getStructuredGridCell(
+                        servModel.data[i].name.toString(),
+                        servModel.data[i].icon.toString(),servModel.data[i].id,
+                      ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _contactItem(servModel) {
+    return Container(
+      color: Colors.blue.withOpacity(0.5),
+      padding: EdgeInsets.all(5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.person),
+          Text(servModel),
+        ],
+      ),
+    );
+  }
+
+  Widget _seeNoSeeMore() {
+    return InkWell(
+      onTap: () => setState(() => _displayAll = !_displayAll),
+      child: Container(
+        color: Colors.blue.withOpacity(0.5),
+        padding: EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.person),
+            Text(_displayAll ? "hide" : "Show all"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  GestureDetector getStructuredGridCell_(name, image,int id) {
     // Wrap the child under GestureDetector to setup a on click action
     return GestureDetector(
       onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (c) => SkillService(
+              serviceId: id.toString(),
+            )));
         print("onTap called.");
       },
-      child: Card(
-          elevation: 2,
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              verticalDirection: VerticalDirection.down,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Container(
-                    alignment: Alignment.topCenter,
-                    child: Image(
-                        image: AssetImage('data_repo/images/' + image)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Center(
-                    child: Text(name,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 12)),
-                  ),
-                )
-              ],
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                alignment: Alignment.topCenter,
+                child: Image(image: AssetImage('data_repo/images/' + image)),
+              ),
             ),
-          )),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: Text(name,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12)),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
-  GestureDetector getStructuredGridCell(name, image) {
+  GestureDetector getStructuredGridCell(name, image,int id) {
     // Wrap the child under GestureDetector to setup a on click action
     return GestureDetector(
       onTap: () {
-        print("onTap called.$name");
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (c) => SkillService(
+              serviceId: id.toString(),
+            )));
       },
-      child: Card(
-          elevation: 2,
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              verticalDirection: VerticalDirection.down,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Container(
-                    alignment: Alignment.topCenter,
-                    child: image.toString().contains("svg")
-                        ? SvgPicture.network(image.toString(),
-                            height: 50, width: 50, fit: BoxFit.fill)
-                        : Image(
-                            image: NetworkImage(image.toString()),
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Center(
-                    child: Text(name,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 12)),
-                  ),
-                )
-              ],
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                alignment: Alignment.topCenter,
+                child: image.toString().contains("svg")
+                    ? SvgPicture.network(image.toString(),
+                        height: 50, width: 50, fit: BoxFit.fill)
+                    : Image(
+                        image: NetworkImage(image.toString()),
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover),
+              ),
             ),
-          )),
-    );
-  }
-
-  GridView _build() {
-    return GridView.count(
-      primary: true,
-      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 1),
-      crossAxisCount: 3,
-      childAspectRatio: 0.85,
-      mainAxisSpacing: 1.0,
-      crossAxisSpacing: 1.0,
-      children: <Widget>[
-        for (var i = 0; i < servModel.data.length; i++)
-          servModel.data[i].icon.toString().endsWith("null")
-              ? getStructuredGridCell_(
-                  servModel.data[i].name.toString(),
-                  "electrical.png",
-                )
-              : getStructuredGridCell(
-                  servModel.data[i].name.toString(),
-                  servModel.data[i].icon.toString(),
-                ),
-      ],
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: Text(name,
+                    overflow: TextOverflow.fade,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12)),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 

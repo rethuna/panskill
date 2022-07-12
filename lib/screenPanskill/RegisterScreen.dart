@@ -8,6 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Database/DatabaseHelper.dart';
+import '../services/Constants.dart';
 
 class RegisterDemo extends StatefulWidget {
   const RegisterDemo({Key? key}) : super(key: key);
@@ -228,10 +229,10 @@ class _RegisterDemoState extends State<RegisterDemo> {
         String? name = regModel.data?.name;
         _save(token!, name!);
         print(" $token");
-        showToast("Register success");
+        kShowToast("Register success");
         sendOTP();
       } else if (response.statusCode == 422) {
-        showToast("Mobile Number Already Exist");
+        kShowToast("Mobile Number Already Exist");
       }
     } catch (e) {
       print(e);
@@ -291,14 +292,5 @@ class _RegisterDemoState extends State<RegisterDemo> {
     return rndnumber;
   }
 
-  void showToast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Color(0xff014c92),
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
+
 }

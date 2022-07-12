@@ -43,124 +43,128 @@ class _PinChkScreenState extends State<PinChkScreen> {
       ),
       resizeToAvoidBottomInset: false,
       // backgroundColor: Color(0xfff7f6fb),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 32),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 32,
-                    color: Colors.black54,
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 32,
+                      color: Colors.black54,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                width: 150,
-                height: 100,
-                decoration: BoxDecoration(
-                  //  color: Color(0xffCDDDEF),
-                  color: Colors.deepPurple.shade50,
-                  shape: BoxShape.circle,
+                Container(
+                  width: 150,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    //  color: Color(0xffCDDDEF),
+                    color: Colors.deepPurple.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset(
+                    'data_repo/images/otp.png',
+                  ),
                 ),
-                child: Image.asset(
-                  'data_repo/images/otp.png',
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Verification',
-                style: TextStyle(
-                    fontSize: 22,
+                Text(
+                  'Verification',
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: mainColor),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Enter the 4 digit Pin ",
+                  style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: mainColor),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Enter the 4 digit Pin ",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black38,
+                    color: Colors.black38,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 28,
-              ),
-              Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                SizedBox(
+                  height: 28,
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        OtpInput(
-                            controller: _fieldOne, first: true, last: false),
-                        OtpInput(
-                            controller: _fieldTwo, first: false, last: false),
-                        OtpInput(
-                            controller: _fieldThree, first: false, last: false),
-                        OtpInput(
-                            controller: _fieldFour, first: false, last: true)
-                      ],
-                    ),
-                    SizedBox(
-                      height: 22,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            pswdNumber = _fieldOne.text +
-                                _fieldTwo.text +
-                                _fieldThree.text +
-                                _fieldFour.text;
-                            getData();
-                          });
-                        },
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(mainColor),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          OtpInput(
+                              controller: _fieldOne, first: true, last: false),
+                          OtpInput(
+                              controller: _fieldTwo, first: false, last: false),
+                          OtpInput(
+                              controller: _fieldThree, first: false, last: false),
+                          OtpInput(
+                              controller: _fieldFour, first: false, last: true)
+
+                        ],
+                      ),
+                      SizedBox(
+                        height: 22,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              pswdNumber = _fieldOne.text +
+                                  _fieldTwo.text +
+                                  _fieldThree.text +
+                                  _fieldFour.text;
+                              getData();
+                            });
+                          },
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(mainColor),
+                            shape:
+                                MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(14.0),
+                            child: Text(
+                              'Verify and continue',
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(14.0),
-                          child: Text(
-                            'Verify and continue',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 18,
-              ),
+                SizedBox(
+                  height: 18,
+                ),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -207,7 +211,7 @@ class _PinChkScreenState extends State<PinChkScreen> {
 
 String OTP(int len) {
   var rndnumber = "";
-  var rnd = new Random();
+  var rnd = Random();
   for (var i = 0; i < len; i++) {
     rndnumber = rndnumber + rnd.nextInt(9).toString();
   }
@@ -233,12 +237,12 @@ class OtpInput extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1.0,
         child: TextField(
-          autofocus: true,
+          autofocus: false,
           onChanged: (value) {
             if (value.length == 1 && last == false) {
               FocusScope.of(context).nextFocus();
             }
-            if (value.length == 0 && first == false) {
+            if (value.isEmpty && first == false) {
               FocusScope.of(context).previousFocus();
             }
           },

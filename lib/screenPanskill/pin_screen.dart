@@ -44,14 +44,14 @@ class _PinGenScreenState extends State<PinGenScreen> {
       // backgroundColor: Color(0xfff7f6fb),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
           child: Column(
             children: [
               Align(
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_back,
                     size: 32,
                     color: Colors.black54,
@@ -221,16 +221,7 @@ class _PinGenScreenState extends State<PinGenScreen> {
     }
   }
 
-  void showToast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: mainColor,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
+
 }
 
 String OTP(int len) {
@@ -267,7 +258,7 @@ class OtpInput extends StatelessWidget {
             if (value.length == 1 && last == false) {
               FocusScope.of(context).nextFocus();
             }
-            if (value.length == 0 && first == false) {
+            if (value.isEmpty && first == false) {
               FocusScope.of(context).previousFocus();
             }
           },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:panskill/Model/SkilledModel.dart';
@@ -45,11 +46,21 @@ class _SkillServiceState extends State<SkillService> {
         titleTextStyle: TextStyle(fontSize: 16.0),
         backgroundColor: mainColor,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(5.5),
-        itemCount: skillModel.data.length,
-        itemBuilder: _itemBuilder,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: (skillModel.data.isNotEmpty)
+            ? ListView.builder(
+                itemCount: skillModel.data.length,
+                itemBuilder: _itemBuilder,
+              )
+            :  const Center(
+                child: SpinKitCircle(
+                  color: Colors.blue,
+                  size: 80.0,
+                ),
+              ),
       ),
+
     );
   }
 
@@ -70,28 +81,18 @@ class _SkillServiceState extends State<SkillService> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    skillModel.data[index].media.isEmpty
-                        ? const CircleAvatar(
+                    if (skillModel.data[index].avatar?.isEmpty ?? true) const CircleAvatar(
+                      backgroundColor: Colors.transparent,
                       radius: 40,
-                      backgroundImage: NetworkImage(
-                          "https://webstockreview.net/images/male-clipart-professional-man-3.jpg"),
-                    )
-                        :
-                    CircleAvatar(
-                        radius: 40,
-                        backgroundImage: skillModel.data[index].media[index]
-                            .collectionName ==
-                            'avatar'
-                            ? NetworkImage(skillModel
-                            .data[index].media[0].path
-                            .toString())
-                            : NetworkImage(skillModel
-                            .data[index].media[1].path
-                            .toString())),
-
+                            backgroundImage: AssetImage('data_repo/images/user_demo.png'),
+                          ) else CircleAvatar(
+                            radius: 40,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: NetworkImage(
+                                skillModel.data[index].avatar.toString())),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-//CrossAxisAlignment.end ensures the components are aligned from the right to left.
+                      //CrossAxisAlignment.end ensures the components are aligned from the right to left.
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,37 +138,25 @@ class _SkillServiceState extends State<SkillService> {
               SecondRoute(id: _data.getId(index), name: _data.getName(index))),*/
     );
   }
-  void checkMethodSimple(int value) {
 
-    if(value > 100)
-    {
+  void checkMethodSimple(int value) {
+    if (value > 100) {
       print('Value is Bigger than 100');
-    }
-    else{
+    } else {
       print('Value is Smaller than 100');
     }
   }
-  void showToast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Color(0xff014c92),
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
+
+
 
   _loadDetails() async {
     print('inside save preference');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     mobile = (prefs.getString('mobile') ?? '');
     token = (prefs.getString('token') ?? '');
-    print(token);
+    // print(token);
     getData();
   }
-
-  var loading = false;
 
   void getData() async {
     try {
@@ -181,35 +170,19 @@ class _SkillServiceState extends State<SkillService> {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-      print(data);
         setState(() {
           Map<String, dynamic> resposne = jsonDecode(response.body);
           skillModel = SkilledModel.fromJson(resposne);
-         /* for (int i = 0; i < skillModel.data.length; i++) {
-            print(skillModel.data[i].name);
-            String? path = skillModel.data[i].media[i].collectionName;
-
-            if (path == 'cover') {
-              print('collname:$path');
-
-              String? pathh = skillModel.data[i].media[0].path;
-              String? path2 = skillModel.data[i].media[1].path;
-              print('media[0]:$pathh');
-              print('media[1]:$path2');
-            } else {
-              print('collname:$path');
-
-              String? pathh = skillModel.data[i].media[0].path;
-              print('media[0]:$pathh');
-            }
-          }*/
+          if (skillModel.data.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("No Data Found "),
+            ));
+          }
         });
-      } else if (response.statusCode == 422) {}
+      } else if (response.statusCode == 404) {}
     } catch (e) {
       print(e);
     }
     // var json = jsonDecode(response.body);
-    loading = false;
   }
 }

@@ -11,12 +11,14 @@ class VerifyOTPScreen extends StatefulWidget {
   final String otp;
   final String mobile;
   final String token;
-  VerifyOTPScreen({Key? key, required this.mobile, required this.otp, required this.token})
+
+  VerifyOTPScreen(
+      {Key? key, required this.mobile, required this.otp, required this.token})
       : super(key: key);
 
   @override
   State<VerifyOTPScreen> createState() =>
-      _VerifyOTPScreenState(this.mobile, this.otp,this.token);
+      _VerifyOTPScreenState(this.mobile, this.otp, this.token);
 }
 
 class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
@@ -139,8 +141,8 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                               showToast("OTP is verified successfully");
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (c) => PinGenScreen(
-                                    token: token.toString(),
-                                  )));
+                                        token: token.toString(),
+                                      )));
                             } else {
                               showToast("OTP is verified failed");
                             }
@@ -279,12 +281,12 @@ class OtpInput extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1.0,
         child: TextField(
-          autofocus: true,
+          autofocus: false,
           onChanged: (value) {
             if (value.length == 1 && last == false) {
               FocusScope.of(context).nextFocus();
             }
-            if (value.length == 0 && first == false) {
+            if (value.isEmpty && first == false) {
               FocusScope.of(context).previousFocus();
             }
           },
@@ -307,5 +309,12 @@ class OtpInput extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  closeKeyboard(BuildContext context) {
+    var currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
   }
 }

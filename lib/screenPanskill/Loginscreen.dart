@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-
+import 'package:panskill/services/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:panskill/screenPanskill/RegisterScreen.dart';
@@ -66,6 +66,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   border: const OutlineInputBorder(),
                 ),
                 maxLength: 10,
+                autofocus: false,
                 keyboardType: TextInputType.number,
                 controller: mobileNumber),
           ),
@@ -83,18 +84,19 @@ class _LoginDemoState extends State<LoginDemo> {
                             horizontal: 50, vertical: 5)),
                     onPressed: () async {
                       if (mobileNumber.text == "") {
-                        showToast("Enter mobile number");
+                        kShowToast("Enter mobile number");
                       } else {
                         var check = await loginData();
                         print(check.toString());
                         if (check == "true") {
-                          showToast("Login Success");
+                          kShowToast("Login Success");
+                          closeKeyboard(context);
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (c) => PinChkScreen(
                                     token: token.toString(),
                                   )));
                         } else {
-                          showToast("Login failed");
+                          kShowToast("Login failed");
                         }
                       }
                     },
@@ -141,7 +143,12 @@ class _LoginDemoState extends State<LoginDemo> {
       )),
     );
   }
-
+  closeKeyboard(BuildContext context) {
+    var currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
   Future<String> loginData() async {
     String result;
     final response =
@@ -171,22 +178,12 @@ class _LoginDemoState extends State<LoginDemo> {
 }
 _save(String token, String mobile) async {
   final prefs = await SharedPreferences.getInstance();
-
   prefs.setString('token', token);
   prefs.setString('mobile', mobile);
 
   print('saved $token');
 }
-void showToast(String msg) {
-  Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Color(0xff014c92),
-      textColor: Colors.white,
-      fontSize: 16.0);
-}
+
 
 String OTP(int len) {
   var rndnumber = "";

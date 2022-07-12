@@ -10,6 +10,7 @@ import 'package:panskill/screenPanskill/Skilled_Service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../screenPanskill/HomePage.dart';
+import '../screenPanskill/SearchService.dart';
 
 class ServicePage extends StatefulWidget {
   const ServicePage({Key? key}) : super(key: key);
@@ -62,7 +63,7 @@ class _ServicePageState extends State<ServicePage> {
           Wrap(
             spacing: 5, // space between two icons
             children: <Widget>[
-              new IconButton(
+               IconButton(
                 icon: actionIcon,
                 onPressed: () {
                   setState(() {
@@ -72,11 +73,11 @@ class _ServicePageState extends State<ServicePage> {
                         style: new TextStyle(
                           color: Colors.white,
                         ),
-                        decoration: new InputDecoration(
+                        decoration:  InputDecoration(
                             prefixIcon:
                             new Icon(Icons.search, color: Colors.white),
                             hintText: "Search...",
-                            hintStyle: new TextStyle(color: Colors.white)),
+                            hintStyle:  TextStyle(color: Colors.white)),
                       );
                     } else {
                       this.actionIcon = new Icon(Icons.search);
@@ -99,61 +100,20 @@ class _ServicePageState extends State<ServicePage> {
       body: Stack(
         children: <Widget>[dashBg, content],
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const SearchService()));
+          },
+          child: const Icon(Icons.filter_list),
+          backgroundColor: mainColor,
+        ),
+      ),
+      floatingActionButtonLocation:FloatingActionButtonLocation.miniEndDocked,
       drawer: MyDrawerDirectory(),
 
-    );
-  }
-
-  _top() {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-          color: Colors.deepPurple,
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30))),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage("data_repo/images/logo.png"),
-                  ),
-                  SizedBox(width: 10.0),
-                  Text(
-                    "Hi..there..",
-                    style: TextStyle(color: Colors.white),
-                  )
-                ],
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.notifications,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              )
-            ],
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          TextField(
-            decoration: InputDecoration(
-              hintText: "Search",
-              fillColor: Colors.white,
-              filled: true,
-              suffixIcon: Icon(Icons.filter_list),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.transparent)),
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -189,7 +149,7 @@ class _ServicePageState extends State<ServicePage> {
           '10 items',
           style: TextStyle(color: Colors.white70),
         ),
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           child: Image(
             image: AssetImage('data_repo/images/logo.png'),
             width: 30,
@@ -319,6 +279,7 @@ class _ServicePageState extends State<ServicePage> {
             )));
         print("onTap called.");
       },
+      //65.3
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Column(
@@ -391,7 +352,7 @@ class _ServicePageState extends State<ServicePage> {
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                     softWrap: false,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.normal,
                         fontSize: 12)),
@@ -437,7 +398,8 @@ class _ServicePageState extends State<ServicePage> {
   void getData() async {
     try {
       final response = await http
-          .get(Uri.parse("http://panskillconnect.com/api/services"), headers: {
+          .get(Uri.parse("http://panskillconnect.com/api/services"),
+          headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
@@ -449,7 +411,9 @@ class _ServicePageState extends State<ServicePage> {
           servModel = Services.fromJson(resposne);
           _loadedPhotos = servModel.data;
         });
-      } else if (response.statusCode == 422) {}
+      } else if (response.statusCode == 422) {
+
+      }
     } catch (e) {
       print(e);
     }
